@@ -43,6 +43,37 @@ app.get('/setup-db', async (req, res) => {
   }
 });
 
+// Create a Todo
+app.post('/todos', async (req, res) => {
+  try {
+    // 1. Get data from the frontend (req.body)
+    const { description } = req.body; 
+    
+    // 2. Run the SQL (The $1 is a placeholder for security)
+    const newTodo = await pool.query(
+      "INSERT INTO todos (description) VALUES($1) RETURNING *",
+      [description]
+    );
+
+    // 3. Send the new row back to the frontend
+    res.json(newTodo.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
+// Get all Todos
+app.get('/todos', async (req, res) => {
+  try {
+    const allTodos = await pool.query("SELECT * FROM todos ORDER BY id ASC");
+    res.json(allTodos.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
