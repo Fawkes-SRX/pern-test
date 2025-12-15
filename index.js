@@ -25,6 +25,24 @@ app.get('/time', async (req, res) => {
     }
 });
 
+// TEMP ROUTE: Create the table
+app.get('/setup-db', async (req, res) => {
+  try {
+    // You know this SQL!
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS todos (
+        id SERIAL PRIMARY KEY,
+        description VARCHAR(255),
+        is_complete BOOLEAN DEFAULT FALSE
+      );
+    `);
+    res.send("Table created successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error creating table");
+  }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
