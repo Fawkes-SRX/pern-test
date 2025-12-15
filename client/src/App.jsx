@@ -26,6 +26,21 @@ function App() {
     getTodos();
   }, []);
 
+  // DELETE FUNCTION
+  const deleteTodo = async (id) => {
+    try {
+      await fetch(`${API_URL}/todos/${id}`, {
+        method: "DELETE"
+      });
+      
+      // Auto-update the list by filtering out the one we just deleted
+      // (This is faster than fetching the whole list again!)
+      setTodos(todos.filter(todo => todo.id !== id));
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   // 4. EVENT HANDLERS
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -61,8 +76,14 @@ function App() {
 
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {todos.map(todo => (
-          <li key={todo.id} style={{ borderBottom: '1px solid #ddd', padding: '10px 0' }}>
-            {todo.description}
+          <li key={todo.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #ddd', padding: '10px 0' }}>
+            <span>{todo.description}</span>
+            <button 
+              onClick={() => deleteTodo(todo.id)}
+              style={{ background: 'red', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
